@@ -14,12 +14,14 @@ Vue.component('product', {
 
         <div class="product-info">
             <h1>{{ title }}</h1>
-            <a :href="linkText">More products like this</a>
             <p v-if="inStock > 10">In Stock</p>
             <p v-else-if="inStock <= 10 && inStock > 0">Almost sold out!</p>
             <p v-else :class="{outStock: !inStock}">Out of Stock</p>
+            
+            <p>Shipping: {{ shipping }}</p>
             <span v-if="onSale"> On Sale </span>
             <p>{{ sale }}</p>
+            
             <div
                     class="color-box"
                     v-for="(variant, index) in variants"
@@ -40,8 +42,8 @@ Vue.component('product', {
             </button> 
             <br>
             <button v-on:click="removeFromCart">Remove from cart</button>
-            <product-tabs :reviews="reviews" :shipping="shipping" :details="details"></product-tabs>
         </div>
+        <product-tabs :reviews="reviews" :shipping="shipping" :details="details"></product-tabs>
     </div>
     `,
     data() {
