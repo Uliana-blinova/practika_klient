@@ -6,25 +6,26 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <script defer src="js/vue.js"></script>
     <script defer src="js/main.js"></script>
+    <link rel="stylesheet" href="css/main.css">
     <title>Product App</title>
 </head>
 <body>
 <div id="app">
     <h1>{{ product }}</h1>
     <p>{{ description }}</p>
+    <a>{{ link }}</a>
 
     <div class="product">
         <div class="product-image">
             <img alt="#" src=""/>
+            <img :src="image" :alt="altText"/>
+            <a v-bind:href="link">More products like this</a>
         </div>
-
         <div class="product-info">
             <h1> {{ product }}</h1>
         </div>
 
     </div>
 </div>
-
-
 </body>
 </html>
