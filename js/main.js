@@ -69,7 +69,7 @@ Vue.component('product', {
                     variantId: 2235,
                     variantColor: 'blue',
                     variantImage: "./assets/vmSocks-blue-onWhite.jpg",
-                    variantQuantity: 0,
+                    variantQuantity: 2,
                 }
             ],
 
@@ -79,14 +79,23 @@ Vue.component('product', {
     },
     methods: {
         addToCart() {
-            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
+            const variant = this.variants[this.selectedVariant];
+
+            const productData = {
+                id: variant.variantId,
+                name: this.brand + ' ' + this.product,
+                image: variant.variantImage,
+                color: variant.variantColor,
+                shipping: this.shipping,
+                quantity: 1
+            };
+
+            this.$emit('add-to-cart', productData);
         },
 
         removeFromCart() {
-            this.$emit("remove-from-cart", this.variants[this.selectedVariant].variantId,
-            );
+            this.$emit('remove-from-cart', this.variants[this.selectedVariant].variantId);
         },
-
         updateProduct(index) {
             this.selectedVariant = index;
             console.log(index);
@@ -116,7 +125,6 @@ Vue.component('product', {
                 return this.brand + ' ' + this.product + ' are not on sale';
             }
         },
-
         shipping() {
             if (this.premium) {
                 return "Free";
@@ -171,15 +179,18 @@ Vue.component('product-review', {
              </p>
              <p>
                <label>Would you recommend this product?</label><br>
-               <input type="radio" id="recommend-yes" value="yes" v-model="recommend">
+               <input type="radio" id="recommend-yes" value="yes" v-model="recommend":disabled="rating !== null && rating < 4">
                <label for="recommend-yes">Yes</label>
-               <input type="radio" id="recommend-no" value="no" v-model="recommend">
+               <input type="radio" id="recommend-no" value="no" v-model="recommend" :disabled="rating !== null && rating >= 4">
                <label for="recommend-no">No</label>
              </p>
             
              <p>
-               <input type="submit" value="Submit"> 
-             </p>
+              <input 
+                type="submit" 
+                value="Submit" 
+                :disabled="(rating < 4 && recommend !== 'no') || (rating >= 4 && recommend !== 'yes')"> 
+            </p>
             
         </form>
 
@@ -221,7 +232,6 @@ Vue.component('product-review', {
     },
 
 });
-
 Vue.component('product-tabs', {
     props: {
         reviews: {
@@ -254,6 +264,10 @@ Vue.component('product-tabs', {
              <p>{{ review.name }}</p>
              <p>Rating: {{ review.rating }}</p>
              <p>{{ review.review }}</p>
+              <p>
+        <p>Would recommend?</> 
+        {{ review.recommend === 'yes' ? ' Yes' : 'No' }}
+    </p>
            </li>
          </ul>
        </div>
@@ -283,21 +297,25 @@ Vue.component('product-tabs', {
     }
 });
 
-
-
 let app = new Vue({
     el: '#app',
     data: {
         premium: true,
         cart: [],
+        showModal: false,
     },
     methods: {
-        updateCart(id) {
-            this.cart.push(id);
+        updateCart(productData) {
+            this.cart.push(productData);
         },
-        removeFromCart(id) {
-            this.cart.pop(id);
+
+        removeFromCart(variantId) {
+            for (let i = this.cart.length - 1; i >= 0; i--) {
+                if (this.cart[i].id === variantId) {
+                    this.cart.splice(i, 1);
+                    break;
+                }
+            }
         },
     },
-
 });
